@@ -8,7 +8,7 @@
           <p>
             <span>请</span>
             <router-link to="/login">登录</router-link>
-            <router-link class="register" to="register">免费注册</router-link>
+            <router-link class="register" to="/register">免费注册</router-link>
           </p>
         </div>
         <div class="typeList">
@@ -36,6 +36,7 @@
             type="text"
             id="autocomplete"
             class="input-error input-xxlarge"
+            v-model="keyword"
           />
           <button
             class="sui-btn btn-xlarge btn-danger"
@@ -53,10 +54,25 @@
 <script>
 export default {
   name: "Header",
+  data() {
+    return {
+      keyword: "",
+    };
+  },
   methods: {
     //搜索按钮的回调函数：需要向search路由进行跳转
     goSearch() {
-      this.$router.push("/search");
+      //路由传递参数
+      //第一种:字符串形式
+      // this.$router.push("/search/" + this.keyword + "?k=" + this.keyword.toUpperCase());
+      //第二种:模板字符串
+      // this.$router.push(`/search/${this.keyword}?k=${this.keyword.toUpperCase()}`)
+      //第三种:对象
+      this.$router.push({
+        name: "search",
+        // params: { keyword: this.keyword },
+        query: { k: this.keyword.toUpperCase() },
+      });
     },
   },
 };

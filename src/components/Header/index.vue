@@ -70,8 +70,8 @@ export default {
       //第三种:对象
       this.$router.push({
         name: "search",
-        // params: { keyword: this.keyword },
-        query: { k: this.keyword.toUpperCase() },
+        params: { keyword: this.keyword },
+        query: { k: this.keyword.toUpperCase()},
       });
     },
   },

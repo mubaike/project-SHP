@@ -2,10 +2,12 @@
   <!-- 商品分类导航 -->
   <div class="type-nav">
     <div class="container">
+      <!-- 事件委托|事件代理 -->
       <div @mouseleave="leaveIndex">
         <h2 class="all">全部商品分类</h2>
+        <!-- 三级联动 -->
         <div class="sort">
-          <div class="all-sort-list2">
+          <div class="all-sort-list2" @click="goSearch">
             <div
               class="item"
               v-for="(c1, index) in catagoryList"
@@ -13,9 +15,13 @@
               :class="{ cur: currentIndex == index }"
             >
               <h3 @mouseenter="changeIndex(index)">
-                <a href="">{{ c1.categoryName }}</a>
+                <a :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{ c1.categoryName }}</a>
               </h3>
-              <div class="item-list clearfix">
+              <!-- 二级、三级分类 -->
+              <div
+                class="item-list clearfix"
+                :style="{ display: currentIndex == index ? 'block' : 'none' }"
+              >
                 <div
                   class="subitem"
                   v-for="(c2, index) in c1.categoryChild"
@@ -23,14 +29,14 @@
                 >
                   <dl class="fore">
                     <dt>
-                      <a href="">{{ c2.categoryName }}</a>
+                      <a :data-categoryName="c2.categoryName" :data-category2Id="c2.categoryId">{{ c2.categoryName }}</a>
                     </dt>
                     <dd>
                       <em
                         v-for="(c3, index) in c2.categoryChild"
                         :key="c3.categoryId"
                       >
-                        <a href="">{{ c3.categoryName }}</a>
+                        <a :data-categoryName="c3.categoryName" :data-category3Id="c3.categoryId">{{ c3.categoryName }}</a>
                       </em>
                     </dd>
                   </dl>
@@ -57,6 +63,7 @@
 
 <script>
 import { mapState } from "vuex";
+import throttle from 'lodash/throttle';
 export default {
   name: "TypeNav",
   data() {
@@ -73,19 +80,49 @@ export default {
     //右侧需要的是一个函数，当使用这个计算属性的时候，右侧函数会立即执行一次
     //注入一个参数state，其实即为大仓库的数据
     ...mapState({
-      catagoryList: (state) => state.home.catagoryList,
+      catagoryList: (state) => {
+        return state.home.catagoryList;
+      },
     }),
   },
   methods: {
     //鼠标进入修改响应式数据currentIndex属性
-    changeIndex(index) {
-      //index：鼠标移上某一个一级分类的元素的索引值
+    // changeIndex(index) {
+    //   //index：鼠标移上某一个一级分类的元素的索引值
+    //   this.currentIndex = index;
+    // },
+    changeIndex: throttle(function(index) {
       this.currentIndex = index;
-    },
+    }, 50),
     //一级分类鼠标移出的事件回调
     leaveIndex() {
       this.currentIndex = -1;
     },
+    //进行路由跳转
+    goSearch(event) {
+      //最好的解决方案：编程式导航 + 事件委派
+      //带有data-categoryname的节点一定是a标签
+      let element = event.target;
+      let { categoryname, category1id, category2id, category3id } = element.dataset;
+      //如果标签身上拥有categoryname一定是a标签
+      if (categoryname) {
+        //整理路由跳转的参数
+        let location = { name: "search" };
+        let query = { categoryName: categoryname };
+        // 一级分类、二级分类、三级分类的a标签
+        if(category1id) {
+          query.category1Id=category1id;
+        } else if (category2id){
+          query.category2Id=category2id;
+        } else {
+          query.category3Id=category3id;
+        }
+        //整理完参数
+        location.query = query;
+        //路由跳转
+        this.$router.push(location);
+      }
+    }
   },
 };
 </script>
@@ -122,7 +159,6 @@ export default {
     }
 
     .sort {
-      position: absolute;
       left: 0;
       top: 45px;
       width: 210px;
@@ -200,11 +236,11 @@ export default {
             }
           }
 
-          &:hover {
-            .item-list {
-              display: block;
-            }
-          }
+          // &:hover {
+          //   .item-list {
+          //     display: block;
+          //   }
+          // }
         }
         .cur {
           background: skyblue;

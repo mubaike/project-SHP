@@ -90,7 +90,6 @@ export default {
   },
   //组件挂载完毕：可以向服务器发请求
   mounted() {
-    
     //当组件挂载完毕，让show属性变为false
     //如果不是Home路由组件，将typeNav进行隐藏
     if (this.$route.path != "/home") {
@@ -139,10 +138,14 @@ export default {
         } else {
           query.category3Id = category3id;
         }
-        //整理完参数
-        location.query = query;
-        //路由跳转
-        this.$router.push(location);
+        //判断：如果路由跳转的时候，带有params参数，也要传过去
+        if (this.$route.params) {
+          location.params = this.$route.params;
+          //动态给location配置对象添加query属性
+          location.query = query;
+          //路由跳转
+          this.$router.push(location);
+        }
       }
     },
     //当鼠标移入的时候，让商品分类列表进行展示
@@ -295,7 +298,7 @@ export default {
     }
     //定义动画时间、速率
     .sort-enter-active {
-      transition: all .5s linear;
+      transition: all 0.5s linear;
     }
     //过渡动画开始状态（出去）
     .sort-leave {
@@ -307,8 +310,8 @@ export default {
     }
     //定义动画时间、速率
     .sort-leave-active {
-      transition: all .5s linear;
-    } 
+      transition: all 0.5s linear;
+    }
   }
 }
 </style>

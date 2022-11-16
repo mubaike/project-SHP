@@ -19,3 +19,10 @@ export const reqGetBannerList = () => {
 export const reqFloorList = () => {
     return mockRequests.get('/floor')
 }
+
+//获取搜索模块地址 地址:/api/list  请求方式：post  参数：需要带参数
+export const reqGetSearchInfo = (params) => requests({
+    url: "/list",
+    method: "post",
+    data: params
+})

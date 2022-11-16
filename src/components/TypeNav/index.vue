@@ -204,7 +204,7 @@ export default {
       height: 461px;
       position: absolute;
       background: #fafafa;
-      overflow: hidden;
+      // overflow: hidden;
       z-index: 999;
 
       .all-sort-list2 {

@@ -5,8 +5,12 @@
         <h3 class="fl">{{ list.name }}</h3>
         <div class="fr">
           <ul class="nav-tabs clearfix">
-            <li class="active" v-for="(nav, index) in list.navList" :key="index">
-              <a href="#tab1" data-toggle="tab">{{nav.text}}</a>
+            <li
+              class="active"
+              v-for="(nav, index) in list.navList"
+              :key="index"
+            >
+              <a href="#tab1" data-toggle="tab">{{ nav.text }}</a>
             </li>
           </ul>
         </div>
@@ -23,23 +27,7 @@
               <img :src="list.imgUrl" />
             </div>
             <div class="floorBanner">
-              <div class="swiper-container" ref="cur" >
-                <div class="swiper-wrapper">
-                  <div
-                    class="swiper-slide"
-                    v-for="(carousel, index) in list.carouselList"
-                    :key="carousel.id"
-                  >
-                    <img :src="carousel.imgUrl" />
-                  </div>
-                </div>
-                <!-- 如果需要分页器 -->
-                <div class="swiper-pagination"></div>
-
-                <!-- 如果需要导航按钮 -->
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-              </div>
+              <Carsousel :list="list.carouselList"></Carsousel>
             </div>
             <div class="split">
               <span class="floor-x-line"></span>
@@ -70,28 +58,11 @@
 </template>
 
 <script>
-import Swiper from 'swiper';
 export default {
   name: "",
   props: ["list"],
   //组件挂载完毕的地方
-  mounted() {
-    var mySwiper = new Swiper(this.$refs.cur, {
-      autoplay: true,
-      loop: true,
-      //分页器
-      pagination: {
-        el: ".swiper-pagination",
-        //点击小球的时候也可以切换图片
-        clickable: true,
-      },
-      //如果需要前进后退按钮
-      navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-    });
-  },
+  mounted() {},
 };
 </script>
 
@@ -143,7 +114,7 @@ export default {
               }
             }
 
-            &.active {
+            &.first-child {
               a {
                 color: #e1251b;
               }

@@ -12,10 +12,7 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <li class="with-x" v-if="searchParams.categoryName">{{searchParams.categoryName}}<i @click="removeCategoryName">×</i></li>
           </ul>
         </div>
 
@@ -171,9 +168,36 @@ export default {
   methods: {
     //想服务器发请求获取search模块数据（根据参数不同返回不同的数据进行展示）
     getData() {
-      this.$store.dispatch("getSearchList",{});
+      this.$store.dispatch("getSearchList",this.searchParams);
     },
+    removeCategoryName() {
+      //把带给服务器的参数置空，再向服务器发请求
+      this.searchParams.categoryName = undefined;
+      this.searchParams.category1Id = undefined;
+      this.searchParams.category2Id = undefined;
+      this.searchParams.category3Id = undefined;
+      this.getData();
+      //进行路由跳转
+      if(this.$route.params){
+        this.$router.push({name:"search", params: this.$route.params});
+      }
+      
+    }
   },
+  //数据监听
+  watch: {
+    //监听属性
+    $route(newValue, oldValue) {
+      //再次发请求之前整理带给服务器参数
+      Object.assign(this.searchParams,this.$route.query,this.$route.params)
+      //再次发起ajax请求
+      this.getData();
+      //请求完毕，把相应的1、2、3级分类的id置空
+      this.searchParams.category1Id = '';
+      this.searchParams.category2Id = '';
+      this.searchParams.category3Id = '';
+    }
+  }
 };
 </script>
 

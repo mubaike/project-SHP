@@ -12,12 +12,30 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x" v-if="searchParams.categoryName">{{searchParams.categoryName}}<i @click="removeCategoryName">×</i></li>
+            <!-- 分类的面包屑-->
+            <li class="with-x" v-if="searchParams.categoryName">
+              {{ searchParams.categoryName
+              }}<i @click="removeCategoryName">×</i>
+            </li>
+            <!-- 关键字的面包屑 -->
+            <li class="with-x" v-if="searchParams.keyword">
+              {{ searchParams.keyword }}<i @click="removeKeyword">×</i>
+            </li>
+            <!--品牌的面包屑-->
+            <li class="with-x" v-if="searchParams.trademark">
+              {{ searchParams.trademark.split(":")[1]
+              }}<i @click="removeTrademark">×</i>
+            </li>
+            <!-- 平台的售卖值属性值展示 -->
+            <li class="with-x" v-for="(attrValue, index) in searchParams.props" :key="index" >
+              {{ attrValue.split(":")[1]
+              }}<i @click="removeAttr(index)">×</i>
+            </li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector @trademarkInfo="trademarkInfo" @attrInfo="attrInfo" />
 
         <!--details-->
         <div class="details clearfix">
@@ -134,7 +152,7 @@ import SearchSelector from "./SearchSelector/SearchSelector";
 import { mapGetters } from "vuex";
 export default {
   name: "Search",
-  data(){
+  data() {
     return {
       //带给服务器的参数
       searchParams: {
@@ -147,9 +165,9 @@ export default {
         pageNo: 1,
         pageSize: 10,
         props: [],
-        trademark: ""
-      }
-    }
+        trademark: "",
+      },
+    };
   },
   components: {
     SearchSelector,
@@ -157,7 +175,7 @@ export default {
   //当组件挂载完毕之前执行一次【先于mounted之前】
   beforeMount() {
     //Object.assign:ES6新增的语法，合并对象
-    Object.assign(this.searchParams,this.$route.query,this.$route.params)
+    Object.assign(this.searchParams, this.$route.query, this.$route.params);
   },
   mounted() {
     this.getData;
@@ -168,8 +186,9 @@ export default {
   methods: {
     //想服务器发请求获取search模块数据（根据参数不同返回不同的数据进行展示）
     getData() {
-      this.$store.dispatch("getSearchList",this.searchParams);
+      this.$store.dispatch("getSearchList", this.searchParams);
     },
+    //删除分类的名字
     removeCategoryName() {
       //把带给服务器的参数置空，再向服务器发请求
       this.searchParams.categoryName = undefined;
@@ -178,10 +197,54 @@ export default {
       this.searchParams.category3Id = undefined;
       this.getData();
       //进行路由跳转
-      if(this.$route.params){
-        this.$router.push({name:"search", params: this.$route.params});
+      if (this.$route.params) {
+        this.$router.push({ name: "search", params: this.$route.params });
       }
-      
+    },
+    //删除关键字
+    removeKeyword() {
+      //置空keyword
+      this.searchParams.keyword = undefined;
+      //再次发请求
+      this.getData();
+      //通知兄弟组件Header清除关键字
+      this.$bus.$emit("clear");
+      //进行路由的跳转
+      if (this.$route.query) {
+        this.$router.push({ name: "search", query: this.$route.query });
+      }
+    },
+    //自定义事件回调
+    trademarkInfo(trademark) {
+      //整理品牌字段的参数
+      this.searchParams.trademark = `${trademark.tmId}:${trademark.tmName}`;
+      //再次发请求
+      this.getData();
+    },
+    //删除品牌的信息
+    removeTrademark() {
+      //将品牌的信息置空
+      this.searchParams.trademark = undefined;
+      //再次发请求
+      this.getData();
+    },
+    //收集平台属性地方的回调函数
+    attrInfo(attr,attrValue) {
+      //整理参数格式
+      let props = `${attr.attrId}:${attrValue}:${attr.attrName}`;
+      //数组去重
+      if(this.searchParams.props.indexOf(props)==-1) {
+        this.searchParams.props.push(props);
+      }
+      //再次发请求
+      this.getData();
+    },
+    //删除售卖属性
+    removeAttr(index){
+      //再次整理数据
+      this.searchParams.props.splice(index,1);
+      //再次发请求
+      this.getData();
     }
   },
   //数据监听
@@ -189,15 +252,15 @@ export default {
     //监听属性
     $route(newValue, oldValue) {
       //再次发请求之前整理带给服务器参数
-      Object.assign(this.searchParams,this.$route.query,this.$route.params)
+      Object.assign(this.searchParams, this.$route.query, this.$route.params);
       //再次发起ajax请求
       this.getData();
       //请求完毕，把相应的1、2、3级分类的id置空
-      this.searchParams.category1Id = '';
-      this.searchParams.category2Id = '';
-      this.searchParams.category3Id = '';
-    }
-  }
+      this.searchParams.category1Id = "";
+      this.searchParams.category2Id = "";
+      this.searchParams.category3Id = "";
+    },
+  },
 };
 </script>
 

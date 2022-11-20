@@ -175,7 +175,6 @@ export default {
     margin: 0 auto;
     display: flex;
     position: relative;
-
     .all {
       width: 210px;
       height: 45px;
@@ -216,7 +215,6 @@ export default {
             overflow: hidden;
             padding: 0 20px;
             margin: 0;
-
             a {
               color: #333;
             }
@@ -232,7 +230,6 @@ export default {
             border: 1px solid #ddd;
             top: 0;
             z-index: 9999 !important;
-
             .subitem {
               float: left;
               width: 650px;

@@ -1,15 +1,13 @@
-//配置路由的地方
+//引入Vue
 import Vue from "vue";
+//配置路由的地方
+//引入vue-router路由组件
 import VueRouter from 'vue-router';
+import routes from './routes'
+
 
 //使用插件
 Vue.use(VueRouter);
-
-//引入路由组件
-import Home from '@/pages/Home'
-import Search from '@/pages/Search'
-import Login from '@/pages/Login'
-import Register from '@/pages/Register'
 
 //先把VueRouter原型对象的push，先备份一份
 let originPush = VueRouter.prototype.push;
@@ -40,35 +38,10 @@ VueRouter.prototype.replace = function (location, resolve, reject) {
 //配置路由
 export default new VueRouter({
     //配置路由
-    routes: [
-        {
-            path: "/home",
-            component: Home,
-            meta: { show: true }
-        },
-        {
-            path: "/search/:keyword?",
-            component: Search,
-            meta: { show: true },
-            name: 'search',
-            //路由组件传递props数据
-            //布尔值写法：params
-            // props:true
-        },
-        {
-            path: "/login",
-            component: Login,
-            meta: { show: false }
-        },
-        {
-            path: "/register",
-            component: Register,
-            meta: { show: false }
-        },
-        //重定向，在项目跑起来的时候，访问/，立马让他定向到首页
-        {
-            path: '*',
-            redirect: "/home"
-        }
-    ]
+    routes,
+    //滚动条事件
+    scrollBehavior(to, from, savedPosition) {
+        //返回最上方
+        return { y: 0 }
+    }
 })
